@@ -6,27 +6,37 @@ async function getChats(_, res) {
     return res.json(chats);
 };
 
-async function getChat(req, res) {
-    const id = req.params.id;
-    const chat = await Chat.findById(id);
+async function getChat(req, res, next) {
+    try {
+        const id = req.params.id;
+        const chat = await Chat.findById(id);
 
-    return res.json(chat);
+        if (chat) return res.json(chat);
+
+        return res.status(404).json({ error: "Chat not found"});
+    } catch (error) {
+        next(error);
+    }
 };
 
-async function createChat(req, res) {
-    const { message } = req.body;
+async function createChat(req, res, next) {
+    try {
+        const { message } = req.body;
+        // const chatExists = await Chat.findOne({ message });
 
-    const chat = new Chat({
-        message,
-    });
+        // if (chatExists) return res.status(400).json({ error: "Chat already exists" })
 
-    const savedChat = await chat.save();
+        const chat = new Chat({ message });
 
-    return res.status(201).json(savedChat);
+        const savedChat = await chat.save();
+
+        return res.status(201).json(savedChat);
+    } catch (error) {
+        next(error);
+    }
 };
 
-
-async function updateChat(req, res) {
+async function updateChat(req, res, next) {
     const id = req.params.id;
     const { message } = req.body;
 
@@ -34,17 +44,27 @@ async function updateChat(req, res) {
         message
     };
 
-    const updatedChat = await Chat.findByIdAndUpdate(id, chat, {new: true});
+    try {
+        const updatedChat = await Chat.findByIdAndUpdate(id, chat, { new: true
+    });
 
-    res.json(updatedChat);
+    if (updatedChat) return res.json(updatedChat);
+    
+        return res.status(404).json({ error: "Chat not found"});
+    } catch (error) {
+        next(error);
+    }
 };
 
-async function deleteChat(req, res) {
-    const id = req.params.id;
+async function deleteChat(req, res, next) {
+    try {
+        const id = req.params.id;
+        await Chat.findByIdAndDelete(id);
 
-    await Chat.findByIdAndDelete(id);
-
-    res.status(204).end();
+        res.status(204).end();
+    } catch(error) {
+        next(error);
+    }
 };
 
 export default {

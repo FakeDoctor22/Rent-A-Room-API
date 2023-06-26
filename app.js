@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import config from "./utils/config.js";
 import chatRouter from "./routes/chatRouter.js";
+import errorHandler from "./middlewares/errorHandler.js";
+import unknownEndpoint from "./middlewares/unknownEndpoint.js";
 
 const app = express();
 
@@ -17,5 +19,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("dist"));
 app.use("/api/chats", chatRouter);
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 export default app;
