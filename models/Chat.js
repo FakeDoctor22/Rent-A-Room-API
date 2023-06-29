@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 
-const chatShema = new mongoose.Schema({
+const chatSchema = new mongoose.Schema({
     message: String,
+    user: String
 });
 
-chatShema.set("toJSON", {
+chatSchema.set("toJSON", {
     transform: (_document, returnedObject) => {
         returnedObject.id = returnedObject._id
         delete returnedObject._id;
@@ -12,6 +13,6 @@ chatShema.set("toJSON", {
     }
 });
 
-const Chat = mongoose.model("chat", chatShema);
+const Chat = mongoose.model("Chat", chatSchema);
 
 export default Chat;
